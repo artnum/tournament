@@ -73,7 +73,7 @@ void pool_dump(FILE * stream, Pool * pool) {
     fprintf(stream, "<POOL %d>\n", pool->id);
     fprintf(stream, "<Opponents %d>\n", pool->opp_count);
     for(i = 0; i < pool->opp_count; i++) {
-        if(!is_null(pool->meetings[i])) {
+        if(!is_null(pool->opponents[i])) {
             fprintf(stream, "\t");
             any_dump(stream, pool->opponents[i]);
         }

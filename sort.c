@@ -97,7 +97,7 @@ void order_norow(Pool * pool) {
    after the first round of meeting (a round is NUMBER_OF_OPPONENTS / 2). i
  */
 void order_serie(Pool * pool) {
-    int i = 0, serie = 0, ordered = 0, j = 0;
+    int i = 0, serie = 0, must = 0, ordered = 0, j = 0;
     unsigned int * meet_counter;
     Meeting * current = NULL;
     Meeting ** series = NULL;
@@ -145,16 +145,18 @@ void order_serie(Pool * pool) {
         current = NULL;
         for(i = 0; i < j; i++) {
             current = series[i];
-            if(ordered == 0 || j < 2 || !CMP_OPP(current->opponents,
+            if(ordered == 0 || must > pool->meet_count || !CMP_OPP(current->opponents,
                         pool->ordered[ordered - 1]->opponents)) {
                 pool->ordered[ordered] = current;
                 current->planned = 1;
                 (*(int *)current->opponents[0]->sort)++;
                 (*(int *)current->opponents[1]->sort)++;
                 ordered++;
+                must = 0;
                 break;
             }
         }
+        must++;
     } while(ordered < pool->meet_count);
 
     null(series);
