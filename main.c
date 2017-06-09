@@ -50,6 +50,10 @@ int main(int argc, char * argv[]) {
         srandom(time(NULL));
 
         meeting_make_pool(pool);
+       
+        order_serie(pool);
+        any_dump(NULL, pool);
+        
         order_norow(pool);
         any_dump(NULL, pool);
         any_free(pool);    

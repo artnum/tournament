@@ -58,6 +58,7 @@ typedef struct {
     unsigned int id;
     char * name;
     void * any;
+    void * sort; /* hook for sorting function to attach data if needed */
 } Opponent;
 
 typedef struct {
@@ -110,5 +111,6 @@ void meeting_make_pool(Pool *);
 
 /* *** ordering function *** */
 void order_norow(Pool *);
+void order_serie(Pool *);
 
 #endif /* TOURNAMENT_H__ */

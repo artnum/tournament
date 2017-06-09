@@ -34,6 +34,17 @@
          ((A)[1]->id == (B)[1]->id)   \
         )
 
+void unplan_meetings(Pool * pool) {
+    int i = 0;
+    assert(! is_null(pool));
+    
+    for(i = 0; i < pool->meet_count; i++) {
+        pool->meetings[i]->planned = 0;
+    }
+
+    return;
+}
+
 void randomize_meetings(Pool * pool) {
     int i = 0, j = 0, r = 0;
     Meeting * current = NULL;
@@ -56,7 +67,8 @@ void order_norow(Pool * pool) {
     Meeting * current = NULL;
 
     assert(!is_null(pool));
-    
+   
+    unplan_meetings(pool); 
     if(pool->randomize) { randomize_meetings(pool); }
 
     if(!is_null($$(pool->meet_count, pool->ordered))) {
@@ -69,6 +81,7 @@ void order_norow(Pool * pool) {
                         pool->ordered[ordered] = current;
                         current->planned = 1;
                         ordered++;
+                        must = 0;
                         break;
                     }
                 }
@@ -76,4 +89,66 @@ void order_norow(Pool * pool) {
             if(i >= pool->meet_count) { must = 1; }
         } while(ordered < pool->meet_count);
     }
+}
+
+/* Sort in a way that there's no meeting twice in a row but try to limit waiting time
+   by making series of meetings so everyone will have done, at least, one meeting 
+   after the first round of meeting (a round is NUMBER_OF_OPPONENTS / 2). i
+ */
+void order_serie(Pool * pool) {
+    int i = 0, serie = 0, must = 0, ordered = 0;
+    unsigned int * meet_counter;
+    Meeting * current = NULL;
+
+    assert(!is_null(pool));
+
+    if(is_null($$(pool->opp_count, meet_counter))) {
+        return;
+    }
+
+    if(is_null($$(pool->meet_count, pool->ordered))) {
+        null(meet_counter); 
+        return;
+    }
+
+    unplan_meetings(pool); 
+    if(pool->randomize) { randomize_meetings(pool); }
+
+    for(i = 0; i < pool->opp_count; i++) {
+        pool->opponents[i]->sort = meet_counter + i;
+        *((int *)pool->opponents[i]->sort) = 0;
+    }
+
+    do {
+        for(i = 0; i < pool->meet_count; i++) {
+            current = pool->meetings[i];
+            if(!current->planned) {
+                if(must == 1 || (*((int *)current->opponents[0]->sort) == serie &&
+                    *((int *)current->opponents[1]->sort) == serie)) {
+                    if(ordered == 0 || must == 2 || !CMP_OPP(current->opponents,
+                                pool->ordered[ordered - 1]->opponents)) {
+                   
+                        pool->ordered[ordered] = current;
+                        current->planned = 1;
+                        (*(int *)current->opponents[0]->sort)++;
+                        (*(int *)current->opponents[1]->sort)++;
+                        ordered++;
+                        must = 0;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(i >= pool->meet_count) { must++; }
+        if(must > 2) {
+            must = 0; serie++;
+        }
+    } while(ordered < pool->meet_count);
+
+    null(meet_counter);
+    for(i = 0; i < pool->opp_count; i++) {
+        pool->opponents[i]->sort = NULL;
+    }
+    return;
 }
