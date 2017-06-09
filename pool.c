@@ -32,8 +32,7 @@
 Pool * pool_init(unsigned int id) {
     Pool * pool = NULL;
 
-    pool = calloc(1, sizeof(*pool));
-    if(!is_null(pool)) {
+    if(!is_null($(pool))) {
         pool->_type = TOURNAMENT_TYPE_POOL;
         pool->id = id;
         pool->meetings = NULL;
@@ -70,24 +69,48 @@ void pool_dump(FILE * stream, Pool * pool) {
     }
 
     fprintf(stream, "<POOL %d>\n", pool->id);
-    fprintf(stream, "Opponents %d\n", pool->opp_count);
+    fprintf(stream, "<Opponents %d>\n", pool->opp_count);
     for(i = 0; i < pool->opp_count; i++) {
-        any_dump(stream, pool->opponents[i]);
+        if(!is_null(pool->meetings[i])) {
+            fprintf(stream, "\t");
+            any_dump(stream, pool->opponents[i]);
+        }
     }
+    fprintf(stream, "</Opponents>\n");
+    fprintf(stream, "<Meetings %d>\n", pool->meet_count);
+    for(i = 0; i < pool->meet_count; i++) {
+        if(!is_null(pool->ordered[i])) {
+            fprintf(stream, "\t");
+            any_dump(stream, pool->ordered[i]);
+        }
+    } 
+    fprintf(stream, "</Meetings>\n");
     fprintf(stream, "</POOL>\n");
 
     return;
 }
 
-/* Return always NULL */
 void * pool_free(Pool * pool) {
     int i = 0;
 
     assert(!is_null(pool));
 
+    if(!is_null(pool->meetings)) {
+        for(i = 0; i < pool->meet_count; i++) {
+            if(!is_null(pool->meetings[i])) {
+                pool->meetings[i] = any_free(pool->meetings[i]);
+            }
+        }
+
+        pool->meet_count = 0;
+        null(pool->meetings);
+    }
+    if(!is_null(pool->ordered)) {
+        null(pool->ordered);
+    }
     if(!is_null(pool->opponents)) {
         for(i = 0; i < pool->opp_count; i++) {
-            if(pool->opponents[i] != NULL) {
+            if(!is_null(pool->opponents[i])) {
                 pool->opponents[i] = any_free(pool->opponents[i]);
             }
         }

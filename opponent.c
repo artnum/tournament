@@ -35,16 +35,15 @@ Opponent * opponent_init(unsigned int id, char * name) {
 
     assert(!is_null(name));
 
-    opp = calloc(1, sizeof(*opp));
-    if(!is_null(opp)) {
+    if(!is_null($(opp))) {
         opp->_type = TOURNAMENT_TYPE_OPPONENT;
         opp->id = id;
+        opp->any = NULL;
         name_len = strlen(name) + 1;
         if(MAX_OPPONENT_NAME > 0 && name_len > MAX_OPPONENT_NAME) {
             name_len = MAX_OPPONENT_NAME;
         }
-        opp->name = calloc(name_len, sizeof(*(opp->name)));
-        if(is_null(opp->name)) {
+        if(is_null($$(name_len, opp->name))) {
             null(opp);
         } else {
             strncpy(opp->name, name, name_len);

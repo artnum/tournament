@@ -34,6 +34,7 @@ void * any_free(void * any) {
   switch(*(unsigned short *)any) {
     case TOURNAMENT_TYPE_OPPONENT: opponent_free(any); break;
     case TOURNAMENT_TYPE_POOL: pool_free(any); break;
+    case TOURNAMENT_TYPE_MEETING: meeting_free(any); break;
     default: null(any); break;
   }
 
@@ -50,6 +51,7 @@ void any_dump(FILE * stream, void * any) {
     switch(*(unsigned short *)any) {
         case TOURNAMENT_TYPE_OPPONENT: opponent_dump(stream, any); break;
         case TOURNAMENT_TYPE_POOL: pool_dump(stream, any); break;
+        case TOURNAMENT_TYPE_MEETING: meeting_dump(stream, any); break;
         default: printf("%p\n", any); break;
     }
 }

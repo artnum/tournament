@@ -30,22 +30,30 @@
 
 #define TOURNAMENT_TYPE_POOL        0xA001
 #define TOURNAMENT_TYPE_OPPONENT    0xA002
+#define TOURNAMENT_TYPE_MEETING     0xA003
 
 #ifndef is_null
 #define is_null(A)  ((A) == NULL)
 #endif /* is_null */
 
 #ifndef null
-#define null(A) free(A); (A) = NULL;
+#define null(A)     free(A); (A) = NULL;
 #endif /* null */
 
+#ifndef $
+#define $(A)        ((A) = calloc(1, sizeof(*(A))))
+#endif /* $ */
+
+#ifndef $$
+#define $$(B, A)    ((A) = calloc((B), sizeof(*(A))))
+#endif /* $$ */
 
 #include <stdio.h>
+#include <assert.h>
 
 typedef struct {
     unsigned short _type; /* must be first in struct */
     unsigned int id;
-    unsigned int count;
     char * name;
     void * any;
 } Opponent;
@@ -53,17 +61,23 @@ typedef struct {
 typedef struct {
     unsigned short _type; /* must be first in struct */
     unsigned int id;
-    Opponent * white;
-    Opponent * blue;
+    unsigned int planned;
+    
+    Opponent * opponents[2];
+    int white;
+    int blue;
+    int winner;
+    
     void * any;
-
     void * next;
 } Meeting;
 
 typedef struct {
     unsigned short _type; /* must be first in struct */
     unsigned int id;
-    Meeting * meetings;
+    Meeting ** meetings;
+    Meeting ** ordered;
+    size_t meet_count;
     Opponent ** opponents;
     size_t opp_count;
 } Pool;
@@ -83,5 +97,14 @@ void pool_dump(FILE *, Pool *);
 Opponent * opponent_init(unsigned int, char *);
 void * opponent_free(Opponent *);
 void opponent_dump(FILE *, Opponent *);
+
+/* *** Meeting function *** */
+Meeting * meeting_init(unsigned int, Opponent *, Opponent *);
+void meeting_dump(FILE *, Meeting *);
+void * meeting_free(Meeting *);
+void meeting_make_pool(Pool *);
+
+/* *** ordering function *** */
+void order_norow(Pool *);
 
 #endif /* TOURNAMENT_H__ */

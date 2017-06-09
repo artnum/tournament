@@ -23,37 +23,39 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <stdio.h>
 #include "tournament.h"
 
-int main(int argc, char * argv[]) {
-    int i = 0;
-    const char * names[] = { "A", "B", "C", "D", "E", NULL };
-    Opponent * opp;
-    Pool * pool;
+#define CMP_OPP(A, B) ( \
+         ((A)[0]->id == (B)[0]->id)   ||\
+         ((A)[0]->id == (B)[1]->id)   ||\
+         ((A)[1]->id == (B)[0]->id)   ||\
+         ((A)[1]->id == (B)[1]->id)   \
+        )
 
-    pool = pool_init(0);
-    if(! is_null(pool)) {
-        for(i = 0; !is_null(names[i]); i++) {
-            opp = opponent_init(i, (char *)names[i]);
-            if(!is_null(opp)) {
-                printf("Add %s\n", opp->name);
-                pool_add(pool, opp);
+/* This is the most simple, just try to avoid having a fighter fighting twice in a row */
+void order_norow(Pool * pool) {
+    int i = 0, must = 0, ordered = 0;
+    Meeting * current = NULL;
+
+    assert(!is_null(pool));
+
+    if(!is_null($$(pool->meet_count, pool->ordered))) {
+        do {
+            for(i = 0; i < pool->meet_count; i++) {
+                current = pool->meetings[i];
+                if(!current->planned) {
+                    if(ordered == 0 || must || !CMP_OPP(current->opponents,
+                                pool->ordered[ordered - 1]->opponents)) {
+                        pool->ordered[ordered] = current;
+                        current->planned = 1;
+                        ordered++;
+                        break;
+                    }
+                }
             }
-        }
-
-        /* Random must be initialize to give random white/blue position */
-        srandom(time(NULL));
-
-        meeting_make_pool(pool);
-        order_norow(pool);
-        any_dump(NULL, pool);
-        any_free(pool);    
+            if(i >= pool->meet_count) { must = 1; }
+        } while(ordered < pool->meet_count);
     }
-    
-
-    return 0;
 }
