@@ -31,12 +31,12 @@
 
 int main(int argc, char * argv[]) {
     int i = 0;
-    const char * names[] = { "A", "B", "C", "D", "E", NULL };
+    const char * names[] = { "A", "B", "C", "D", "E", NULL, "F", "G",  "H", "I",   NULL };
     Opponent * opp;
     Pool * pool;
 
     pool = pool_init(0);
-    pool->randomize = 1;
+/*    pool->randomize = 1;*/
     if(! is_null(pool)) {
         for(i = 0; !is_null(names[i]); i++) {
             opp = opponent_init(i, (char *)names[i]);

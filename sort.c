@@ -25,6 +25,7 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "tournament.h"
 
 #define CMP_OPP(A, B) ( \
@@ -96,9 +97,10 @@ void order_norow(Pool * pool) {
    after the first round of meeting (a round is NUMBER_OF_OPPONENTS / 2). i
  */
 void order_serie(Pool * pool) {
-    int i = 0, serie = 0, must = 0, ordered = 0;
+    int i = 0, serie = 0, ordered = 0, j = 0;
     unsigned int * meet_counter;
     Meeting * current = NULL;
+    Meeting ** series = NULL;
 
     assert(!is_null(pool));
 
@@ -111,6 +113,11 @@ void order_serie(Pool * pool) {
         return;
     }
 
+    if(is_null($$(pool->meet_count, series))) {
+        null(meet_counter);
+        return;
+    }
+
     unplan_meetings(pool); 
     if(pool->randomize) { randomize_meetings(pool); }
 
@@ -120,33 +127,39 @@ void order_serie(Pool * pool) {
     }
 
     do {
+        j = 0;
+        memset(series, 0, pool->meet_count);
         for(i = 0; i < pool->meet_count; i++) {
             current = pool->meetings[i];
             if(!current->planned) {
-                if(must == 1 || (*((int *)current->opponents[0]->sort) == serie &&
+                if((*((int *)current->opponents[0]->sort) == serie || 
                     *((int *)current->opponents[1]->sort) == serie)) {
-                    if(ordered == 0 || must == 2 || !CMP_OPP(current->opponents,
-                                pool->ordered[ordered - 1]->opponents)) {
-                   
-                        pool->ordered[ordered] = current;
-                        current->planned = 1;
-                        (*(int *)current->opponents[0]->sort)++;
-                        (*(int *)current->opponents[1]->sort)++;
-                        ordered++;
-                        must = 0;
-                        break;
-                    }
+                    series[j] = current;
+                    j++;
                 }
             }
         }
-
-        if(i >= pool->meet_count) { must++; }
-        if(must > 2) {
-            must = 0; serie++;
+        if(j == 0) {
+            serie++;
+        }
+        current = NULL;
+        for(i = 0; i < j; i++) {
+            current = series[i];
+            if(ordered == 0 || j < 2 || !CMP_OPP(current->opponents,
+                        pool->ordered[ordered - 1]->opponents)) {
+                pool->ordered[ordered] = current;
+                current->planned = 1;
+                (*(int *)current->opponents[0]->sort)++;
+                (*(int *)current->opponents[1]->sort)++;
+                ordered++;
+                break;
+            }
         }
     } while(ordered < pool->meet_count);
 
+    null(series);
     null(meet_counter);
+
     for(i = 0; i < pool->opp_count; i++) {
         pool->opponents[i]->sort = NULL;
     }
