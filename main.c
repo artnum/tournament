@@ -36,6 +36,7 @@ int main(int argc, char * argv[]) {
     Pool * pool;
 
     pool = pool_init(0);
+    pool->randomize = 1;
     if(! is_null(pool)) {
         for(i = 0; !is_null(names[i]); i++) {
             opp = opponent_init(i, (char *)names[i]);

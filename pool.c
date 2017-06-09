@@ -38,6 +38,8 @@ Pool * pool_init(unsigned int id) {
         pool->meetings = NULL;
         pool->opponents = NULL;
         pool->opp_count = 0;
+        pool->randomize = 0;
+        pool->sorting = TOURNAMENT_SORT_NOROW;
     }
 
     return pool;

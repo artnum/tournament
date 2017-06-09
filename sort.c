@@ -34,12 +34,30 @@
          ((A)[1]->id == (B)[1]->id)   \
         )
 
+void randomize_meetings(Pool * pool) {
+    int i = 0, j = 0, r = 0;
+    Meeting * current = NULL;
+
+    assert(!is_null(pool));
+
+    for(r = random() % pool->meet_count; r >= 0; r--) {
+        for(i = 0; i < pool->meet_count; i++) {
+            j = random() % pool->meet_count;
+            current = pool->meetings[i];
+            pool->meetings[i] = pool->meetings[j];
+            pool->meetings[j] = current;
+        }  
+    }
+}
+
 /* This is the most simple, just try to avoid having a fighter fighting twice in a row */
 void order_norow(Pool * pool) {
     int i = 0, must = 0, ordered = 0;
     Meeting * current = NULL;
 
     assert(!is_null(pool));
+    
+    if(pool->randomize) { randomize_meetings(pool); }
 
     if(!is_null($$(pool->meet_count, pool->ordered))) {
         do {

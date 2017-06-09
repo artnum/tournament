@@ -32,6 +32,8 @@
 #define TOURNAMENT_TYPE_OPPONENT    0xA002
 #define TOURNAMENT_TYPE_MEETING     0xA003
 
+#define TOURNAMENT_SORT_NOROW       1
+
 #ifndef is_null
 #define is_null(A)  ((A) == NULL)
 #endif /* is_null */
@@ -75,6 +77,8 @@ typedef struct {
 typedef struct {
     unsigned short _type; /* must be first in struct */
     unsigned int id;
+    unsigned int sorting; /* which sort to apply */
+    unsigned int randomize; /* randomize first */
     Meeting ** meetings;
     Meeting ** ordered;
     size_t meet_count;
