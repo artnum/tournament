@@ -1,5 +1,5 @@
 /*- 
- * Copyright (c) 2017 Artisan du Numérique <etienne@artisan-numerique.ch>
+ * Copyright (c) 2017 Etienne Bagnoud <etienne@artisan-numerique.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,6 +86,11 @@ typedef struct {
     Opponent ** opponents;
     size_t opp_count;
 } Pool;
+
+typedef struct {
+    unsigned short _type; /* Must be first */
+    unsigned int id;
+}
 
 /* Free anything based on first unsigned int of the struct */
 void * any_free(void *);

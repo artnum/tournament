@@ -1,5 +1,5 @@
 /*- 
- * Copyright (c) 2017 Artisan du Numérique <etienne@artisan-numerique.ch>
+ * Copyright (c) 2017 Etienne Bagnoud <etienne@artisan-numerique.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
