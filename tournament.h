@@ -87,11 +87,6 @@ typedef struct {
     size_t opp_count;
 } Pool;
 
-typedef struct {
-    unsigned short _type; /* Must be first */
-    unsigned int id;
-}
-
 /* Free anything based on first unsigned int of the struct */
 void * any_free(void *);
 void any_dump(FILE * stream, void * any);
