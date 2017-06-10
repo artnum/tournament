@@ -31,7 +31,7 @@
 
 int main(int argc, char * argv[]) {
     int i = 0;
-    const char * names[] = { "A", "B", "C",  "D", "E", "F",  "G",    "H",  "I",   NULL };
+    const char * names[] = { "A", "B", "C", "D", "E", NULL, "F", "G",  "H", "I",   NULL };
     Opponent * opp;
     Pool * pool;
 
