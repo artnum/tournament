@@ -28,6 +28,7 @@
 
 #define MAX_OPPONENT_NAME    50
 
+#define TOURNAMENT_TYPE_TOURNAMENT  0xA000
 #define TOURNAMENT_TYPE_POOL        0xA001
 #define TOURNAMENT_TYPE_OPPONENT    0xA002
 #define TOURNAMENT_TYPE_MEETING     0xA003
@@ -56,6 +57,7 @@
 typedef struct {
     unsigned short _type; /* must be first in struct */
     unsigned int id;
+    unsigned int weight;
     char * name;
     void * any;
     void * sort; /* hook for sorting function to attach data if needed */
@@ -87,9 +89,25 @@ typedef struct {
     size_t opp_count;
 } Pool;
 
+typedef struct {
+    unsigned short _type; /* must be first in struct */
+    char * name;
+    Opponent ** opponents;
+    size_t opp_count;
+    Pool ** pools;
+    size_t pools_count;
+    unsigned int weight_gap;
+} Tournament;
+
 /* Free anything based on first unsigned int of the struct */
 void * any_free(void *);
 void any_dump(FILE * stream, void * any);
+
+
+/* *** Tournament function *** */
+Tournament  * tournament_init(char * name, unsigned int weight_gap);
+void tournament_dump(FILE * stream, Tournament * t);
+void * tournament_free(Tournament * t);
 
 
 /* *** Pool function *** */

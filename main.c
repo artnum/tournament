@@ -32,8 +32,11 @@
 int main(int argc, char * argv[]) {
     int i = 0;
     const char * names[] = { "A", "B", "C", "D", "E", NULL, "F", "G",  "H", "I",   NULL };
+    Tournament * T;
     Opponent * opp;
     Pool * pool;
+
+    T = tournament_init("Tournament", 5);
 
     pool = pool_init(0);
 /*    pool->randomize = 1;*/
@@ -55,10 +58,11 @@ int main(int argc, char * argv[]) {
         any_dump(NULL, pool);
         
         order_norow(pool);
+        any_dump(NULL, T);
         any_dump(NULL, pool);
-        any_free(pool);    
+        any_free(pool);
+        any_free(T);   
     }
-    
 
     return 0;
 }

@@ -38,6 +38,7 @@ Opponent * opponent_init(unsigned int id, char * name) {
     if(!is_null($(opp))) {
         opp->_type = TOURNAMENT_TYPE_OPPONENT;
         opp->id = id;
+        opp->weight = 0;
         opp->any = NULL;
         name_len = strlen(name) + 1;
         if(MAX_OPPONENT_NAME > 0 && name_len > MAX_OPPONENT_NAME) {
@@ -61,7 +62,7 @@ void opponent_dump(FILE * stream, Opponent * opp) {
         stream = stdout;
     }
 
-    fprintf(stream, "Opponent %d : %s\n", opp->id, opp->name);
+    fprintf(stream, "Opponent %d : %s - %d\n", opp->id, opp->name, opp->weight);
     
     return;
 }

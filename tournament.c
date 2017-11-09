@@ -25,13 +25,83 @@
  */
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include "tournament.h"
+
+Tournament  * tournament_init(char * name, unsigned int weight_gap) {
+    Tournament * t = NULL;
+    size_t name_len = 0;
+
+    assert(!is_null(name));
+    
+    if(!is_null($(t))) {
+        t->_type = TOURNAMENT_TYPE_TOURNAMENT;
+        t->opponents = NULL;
+        t->pools = NULL;
+        t->weight_gap = weight_gap;
+        name_len = strlen(name) + 1;
+        if(MAX_OPPONENT_NAME > 0 && name_len > MAX_OPPONENT_NAME) {
+            name_len = MAX_OPPONENT_NAME;
+        }
+        if(is_null($$(name_len, t->name))) {
+            null(t);
+        } else {
+            strncpy(t->name, name, name_len);
+            t->name[name_len - 1] = '\0';
+        }
+    }
+
+    return t;
+}
+
+int tournament_add_opp(Tournament * t, void * any) {
+}
+
+int tournament_add_pool(Tournament * t, void * any) {
+}
+
+int tournament_add(Tournament * t, void * any) {
+  assert(!is_null(any));
+
+  switch(*(unsigned short *)any) {
+      case TOURNAMENT_TYPE_OPPONENT: return tournament_add_opp(t, any);
+      case TOURNAMENT_TYPE_POOL:  return tournament_add_pool(t, any);
+  }
+
+  return 0;
+}
+
+void * tournament_free(Tournament * t) {
+    assert(!is_null(t));
+
+    if(!is_null(t->name)) {
+        null(t->name);
+    }
+    null(t);
+
+    return NULL;
+}
+
+void tournament_dump(FILE * stream, Tournament * t) {
+    assert(!is_null(t));
+
+    if(is_null(stream)) {
+        stream = stdout;
+    }
+
+    fprintf(stream, "<TOURNAMENT \"%s\">\n", t->name);
+    fprintf(stream, "Weight gap : %d kg\n", t->weight_gap);
+    fprintf(stream, "</TOURNAMENT>\n");
+
+    return;
+}
 
 /* Return always NULL */
 void * any_free(void * any) {
   assert(!is_null(any));
 
   switch(*(unsigned short *)any) {
+    case TOURNAMENT_TYPE_TOURNAMENT: tournament_free(any); break;
     case TOURNAMENT_TYPE_OPPONENT: opponent_free(any); break;
     case TOURNAMENT_TYPE_POOL: pool_free(any); break;
     case TOURNAMENT_TYPE_MEETING: meeting_free(any); break;
@@ -49,6 +119,7 @@ void any_dump(FILE * stream, void * any) {
     }
 
     switch(*(unsigned short *)any) {
+        case TOURNAMENT_TYPE_TOURNAMENT: tournament_dump(stream, any); break;
         case TOURNAMENT_TYPE_OPPONENT: opponent_dump(stream, any); break;
         case TOURNAMENT_TYPE_POOL: pool_dump(stream, any); break;
         case TOURNAMENT_TYPE_MEETING: meeting_dump(stream, any); break;
